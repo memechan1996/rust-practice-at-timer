@@ -26,3 +26,10 @@ pub struct Problem{
     /// 実験的推定かどうか
     pub is_experimental: Option<bool>,
 }
+
+#[derive(Deserialize, Debug)]
+pub struct ProblemInfo{
+    pub id: String,
+    pub contest_id: String,
+    pub title: String,
+}

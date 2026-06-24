@@ -7,14 +7,18 @@ mod commands;
 use commands::Command;
 
 //use crate::problem_mgr::problem::Problem;
-use crate::problem_mgr::{ProblemMgr, problem};
+use crate::problem_mgr::{ProblemMgr};
 //use crate::Command;
 
 use inquire::Text;
+use std::{fmt::format, thread};
+use chrono::{DateTime, Local};
+use std::time::Duration;
+use std::io;
 
 #[tokio::main]
 async fn main(){
-    let mut problem_mgr = ProblemMgr::new().await;
+    let problem_mgr = ProblemMgr::new().await;
 
     loop{
         let command = Command::select("").prompt().unwrap();
@@ -43,12 +47,29 @@ async fn main(){
                     }
                 }
 
-                let problem = problem_mgr.get_problem_id(&problem_id).unwrap();
+                let problem = problem_mgr.get_problem_model_id(&problem_id).unwrap();
+                println!("Ready...");
+                thread::sleep(Duration::from_secs_f32(1.5f32));
 
-                println!("----------------------");
+                println!("-----------------------------------------------------");
+                println!("contest:      {}", &problem_id.split('_').next().unwrap());
+                println!("title:        {}", problem_mgr.get_problem_info_id(&problem_id, &problem_id.split('_').next().unwrap()).unwrap().title);
                 //println!("{}", )
-                println!("{}", url);
+                println!("link:         {}", url);
+                println!("difficulty:   {}", problem.difficulty.unwrap());
+                println!("-----------------------------------------------------");
+
+                let begin_time: i64 = Local::now().timestamp();
+                let _ = Text::new("If you have finish this problem, Pease Enter.").prompt();
                 //println!("{:?}", problem_mgr.get_problem_random_min_max(min_diff, max_diff).unwrap());
+                let clear_time = Local::now().timestamp() - begin_time;
+                let clear_time_str = format!("[{:0>2}:{:0>2}:{:0>2}]", 
+                        clear_time / 3600,
+                        (clear_time / 60) % 60,
+                        clear_time % 60);
+                println!("Clear time {}", clear_time_str);
+                //let _ = io::stdin().read_line(&mut String::new());
+                //let _ = Text::new("").prompt();
             },
             Command::Exit => {
                 break;
