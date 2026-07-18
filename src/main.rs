@@ -1,26 +1,26 @@
 //main.rs
 
-mod problem_mgr;
 mod commands;
+mod problem_mgr;
 //use serde_json;
 
 use commands::Command;
 
 //use crate::problem_mgr::problem::Problem;
-use crate::problem_mgr::{ProblemMgr};
+use crate::problem_mgr::ProblemMgr;
 //use crate::Command;
 
+use chrono::Local;
 use inquire::Text;
-use std::{fmt::format, thread};
-use chrono::{DateTime, Local};
+use std::thread;
 use std::time::Duration;
-use std::io;
+//use std::io;
 
 #[tokio::main]
-async fn main(){
+async fn main() {
     let problem_mgr = ProblemMgr::new().await;
 
-    loop{
+    loop {
         let command = Command::select("").prompt().unwrap();
 
         match command {
@@ -33,17 +33,18 @@ async fn main(){
                 let url: String;
                 let mut problem_id: String;
                 loop {
-                    problem_id = problem_mgr.get_problem_random_min_max(min_diff, max_diff).unwrap();
+                    problem_id = problem_mgr
+                        .get_problem_random_min_max(min_diff, max_diff)
+                        .unwrap();
 
-                    match problem_mgr
-                        .get_problem_url(&problem_id)
-                        .await
-                    {
+                    match problem_mgr.get_problem_url(&problem_id).await {
                         Some(state) => {
                             url = state.clone();
                             break;
-                        },
-                        None => {continue;},
+                        }
+                        None => {
+                            continue;
+                        }
                     }
                 }
 
@@ -53,7 +54,13 @@ async fn main(){
 
                 println!("-----------------------------------------------------");
                 println!("contest:      {}", &problem_id.split('_').next().unwrap());
-                println!("title:        {}", problem_mgr.get_problem_info_id(&problem_id, &problem_id.split('_').next().unwrap()).unwrap().title);
+                println!(
+                    "title:        {}",
+                    problem_mgr
+                        .get_problem_info_id(&problem_id, &problem_id.split('_').next().unwrap())
+                        .unwrap()
+                        .title
+                );
                 //println!("{}", )
                 println!("link:         {}", url);
                 println!("difficulty:   {}", problem.difficulty.unwrap());
@@ -63,14 +70,16 @@ async fn main(){
                 let _ = Text::new("If you have finish this problem, Pease Enter.").prompt();
                 //println!("{:?}", problem_mgr.get_problem_random_min_max(min_diff, max_diff).unwrap());
                 let clear_time = Local::now().timestamp() - begin_time;
-                let clear_time_str = format!("[{:0>2}:{:0>2}:{:0>2}]", 
-                        clear_time / 3600,
-                        (clear_time / 60) % 60,
-                        clear_time % 60);
+                let clear_time_str = format!(
+                    "[{:0>2}:{:0>2}:{:0>2}]",
+                    clear_time / 3600,
+                    (clear_time / 60) % 60,
+                    clear_time % 60
+                );
                 println!("Clear time {}", clear_time_str);
                 //let _ = io::stdin().read_line(&mut String::new());
                 //let _ = Text::new("").prompt();
-            },
+            }
             Command::Exit => {
                 break;
             }

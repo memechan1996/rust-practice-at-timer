@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
-pub struct Problem{
+pub struct Problem {
     /// IRTモデルのスロープ（傾き）。推定できない問題はnull
     pub slope: Option<f64>,
 
@@ -28,7 +28,7 @@ pub struct Problem{
 }
 
 #[derive(Deserialize, Debug)]
-pub struct ProblemInfo{
+pub struct ProblemInfo {
     pub id: String,
     pub contest_id: String,
     pub title: String,
