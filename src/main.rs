@@ -32,14 +32,22 @@ async fn main() {
 
                 let url: String;
                 let mut problem_id: String;
+                let title: String;
                 loop {
                     problem_id = problem_mgr
                         .get_problem_random_min_max(min_diff, max_diff)
                         .unwrap();
 
+                    let contest_id = problem_id.split('_').next().unwrap();
+                    let info = match problem_mgr.get_problem_info_id(&problem_id, contest_id) {
+                        Some(info) => info,
+                        None => continue,
+                    };
+
                     match problem_mgr.get_problem_url(&problem_id).await {
                         Some(state) => {
                             url = state.clone();
+                            title = info.title.clone();
                             break;
                         }
                         None => {
@@ -54,13 +62,7 @@ async fn main() {
 
                 println!("-----------------------------------------------------");
                 println!("contest:      {}", &problem_id.split('_').next().unwrap());
-                println!(
-                    "title:        {}",
-                    problem_mgr
-                        .get_problem_info_id(&problem_id, &problem_id.split('_').next().unwrap())
-                        .unwrap()
-                        .title
-                );
+                println!("title:        {}", title);
                 //println!("{}", )
                 println!("link:         {}", url);
                 println!("difficulty:   {}", problem.difficulty.unwrap());
